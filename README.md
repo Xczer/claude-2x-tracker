@@ -69,6 +69,22 @@ Source: [Anthropic's official promotion page](https://support.anthropic.com/en/a
 
 Same dark glass look. Same live bar. Same vibe.
 
+### Active (weekday, off-peak)
+
+<p align="center">
+<img src="screenshots/macos-active.png" width="360" alt="macOS widget — 2x Active" />
+&nbsp;&nbsp;
+<img src="screenshots/tray-active.png" width="360" alt="Tray app — 2x Active" />
+</p>
+
+### Weekend
+
+<p align="center">
+<img src="screenshots/macos-weekend.png" width="360" alt="macOS widget — Weekend" />
+&nbsp;&nbsp;
+<img src="screenshots/tray-weekend.png" width="360" alt="Tray app — Weekend" />
+</p>
+
 ---
 
 ## Installation
