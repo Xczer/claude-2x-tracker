@@ -1,0 +1,32 @@
+{
+  "_comment": "Edit this file to match your promotion schedule. Restart the widget after saving.",
+
+  "timezone": "Asia/Kolkata",
+
+  "active_days": [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday"
+  ],
+
+  "blocked_window": {
+    "start": "17:30",
+    "end": "23:30",
+    "_comment": "2x is BLOCKED during this window. Active outside it."
+  },
+
+  "calendar_range": {
+    "start": "2026-03-21",
+    "end": "2026-03-28",
+    "_comment": "8 days shown in the calendar strip. Update to your current promotion period."
+  },
+
+  "theme": {
+    "accent": "#C96442",
+    "active_color": "#22C55E",
+    "blocked_color": "#DC2626",
+    "weekend_color": "#6B7280"
+  }
+}
