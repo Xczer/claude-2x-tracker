@@ -58,9 +58,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install npm dependencies
-        working-directory: tray
-        run: npm install
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
 
       - name: Add macOS cross-compile targets
         if: startsWith(matrix.platform, 'macos')
@@ -68,7 +67,7 @@ jobs:
 
       - name: Build
         working-directory: tray
-        run: npm run build -- --target ${{ matrix.target }}
+        run: cargo tauri build --target ${{ matrix.target }}
 
       - name: Upload artifacts (macOS)
         if: startsWith(matrix.platform, 'macos')
