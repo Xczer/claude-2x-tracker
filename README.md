@@ -1,285 +1,240 @@
 <div align="center">
 
-# ⚡ Claude 2× Tracker
+# Claude 2x Tracker
 
-**A beautiful desktop widget that tells you exactly when you can go brrrr with Claude.**
+**Know exactly when your Claude limits are doubled. Squeeze every last drop out of your subscription.**
 
-*Because manually checking the clock at 5:29 PM is not the vibe.*
+*Because you're not paying $20/mo to use half the capacity. Go full send when the window is open.*
 
 <br/>
 
 ![macOS Widget](https://img.shields.io/badge/macOS_Widget-13%2B-black?style=flat-square&logo=apple)
 ![Tray App](https://img.shields.io/badge/System_Tray-Windows_%7C_macOS_%7C_Linux-6366f1?style=flat-square)
+![KDE Widget](https://img.shields.io/badge/KDE_Plasma-5_%7C_6-1d99f3?style=flat-square&logo=kde)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)
 
 <br/>
 
-> 🟢 **2× ACTIVE** — smash those prompts
-> 🔴 **BLOCKED** — go touch grass
-> ⚫ **WEEKEND** — close the laptop, it's over
+> **2x ACTIVE** -- double the limits, double the fun. ship that side project.
+> **BLOCKED** -- peak hours. normie limits. go touch grass.
+> **WEEKEND** -- no promo. touch even more grass.
 
 </div>
 
 ---
 
-## What is this?
+## Why?
 
-Claude Pro has a **2× usage promotion** — your rate limits are doubled during certain hours on weekdays. The problem? You have to mentally track the window yourself, which you will absolutely forget to do.
+Claude Pro gives you **2x usage limits during off-peak hours**. That's literally double the prompts, double the context, double the output -- for the same subscription you're already paying for.
 
-This project gives you two flavors of the same widget:
+The catch? You have to know *when* the window is open. Miss it and you're back to normal limits, wondering why Claude cut you off mid-conversation.
 
-| | macOS Widget | System Tray App |
-|---|---|---|
-| **Lives** | On your desktop wallpaper | In your system tray / menu bar |
-| **Covers** | macOS only | Windows + macOS + Linux (all distros) |
-| **Feel** | Always visible, sits behind your apps | Click tray icon → popup appears |
-| **Status** | ✅ Available now | 🚧 Coming soon |
+This widget sits on your desktop and tells you exactly:
+- Whether 2x is active **right now**
+- A live 24-hour bar showing peak vs off-peak
+- Countdown to the next window change
+- An 8-day calendar to plan your heavy usage days
 
-Both have the exact same UI, the same dark glass look, the same live bar.
+**No API calls. No internet required (except for schedule updates). Just math and your system clock.**
 
----
-
-## What it shows
-
-```
-┌──────────────────────────────────────────┐
-│ ● 2× ACTIVE              Active for 3h 22m │
-│                                          │
-│  10:24                                   │
-│    │                                     │
-│  ████████████████│░░░░░░░░░░│███         │
-│  12 AM         5:30 PM  11:30 PM   12 AM │
-│                                          │
-│  21  22  23  24  25  26  27  28          │
-│   ●   ●   ●  [●]  ●   ○   ○   ●         │
-└──────────────────────────────────────────┘
-  Green = 2× active    Red = blocked    ○ = weekend
-  [●] = today          │ = right now
-```
-
-- ✅ Whether 2× is active **right now**
-- 📊 A live bar showing the full day's window — past portion dimmed, future bright
-- ⏱ How much active time you have left (or when it comes back)
-- 📅 An 8-day calendar strip to plan ahead
-
-No API calls. No internet. Just math and your system clock.
+Stop guessing. Start shipping.
 
 ---
 
-## The Promotion Schedule (default)
+## The Schedule
 
-| Day | Hours (your configured timezone) | Status |
+All times auto-convert to **your local timezone**. The peak window is defined by Anthropic in ET.
+
+| Day | Your Local Time | Status |
 |---|---|---|
-| Mon – Fri | 12:00 AM → 5:30 PM | 🟢 2× ACTIVE |
-| Mon – Fri | 5:30 PM → 11:30 PM | 🔴 Blocked |
-| Mon – Fri | 11:30 PM → 12:00 AM | 🟢 2× ACTIVE |
-| Sat – Sun | All day | ⚫ No promotion |
+| Mon -- Fri | Outside peak window | **2x ACTIVE** -- go wild |
+| Mon -- Fri | During peak window | **BLOCKED** -- standard limits |
+| Sat -- Sun | All day | **WEEKEND** -- no promotion |
 
-> **Your schedule might be different.** Edit `config.json` to set your own hours and timezone. See [Configuration](#configuration).
+Peak window: **8 AM -- 2 PM Eastern Time** (auto-converted to your timezone on the bar).
+
+Source: [Anthropic's official promotion page](https://support.anthropic.com/en/articles/14063676-claude-march-2026-usage-promotion)
+
+> If Anthropic changes the schedule, we push one file update and all running apps pick it up automatically. No app update needed.
+
+---
+
+## Three Flavors
+
+| | macOS Widget | System Tray App | KDE Plasma Widget |
+|---|---|---|---|
+| **Lives** | On your desktop wallpaper | In your system tray / menu bar | On your KDE desktop |
+| **Covers** | macOS only | Windows + macOS + Linux | KDE Plasma (any distro) |
+| **Feel** | Always visible, behind apps | Click tray icon to toggle | Native desktop widget |
+
+Same dark glass look. Same live bar. Same vibe.
 
 ---
 
 ## Installation
 
-### macOS Widget
+### System Tray App (Windows / macOS / Linux)
 
-The native widget. Sits on your desktop wallpaper, behind all your apps. Draggable, remembers its position, no Dock icon, no menu bar icon.
+**Recommended for most users.** Pre-built binaries on the [Releases](https://github.com/Xczer/claude-2x/releases) page.
 
-**Requirements:** macOS 13 (Ventura) or later · Xcode 15+
+Or build from source:
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/Xczer/claude-2x-tracker.git
-cd claude-2x-tracker
-
-# 2. Configure your schedule
-#    edit config.json (see Configuration section)
-
-# 3. Open in Xcode and run
-open macOS/Claude2xWidget/Claude2xWidget.xcodeproj
-# Press Cmd+R to build and run
+git clone https://github.com/Xczer/claude-2x.git
+cd claude-2x/tray
+npm install
+cargo tauri build
 ```
 
-The widget appears in the **top-right corner** of your screen. Drag it anywhere you like.
+**Requirements:** Rust 1.70+ and Node 18+
 
-**To auto-launch on login:**
-```bash
-# Build release version first:
-# Xcode → Product → Archive → Distribute App → Copy App
-# Then move to /Applications, then:
-# System Settings → General → Login Items → add Claude2xWidget.app
-```
-
-**If macOS blocks the app ("unidentified developer"):**
-```bash
-xattr -cr /Applications/Claude2xWidget.app
-```
-Or: right-click the app → Open → Open anyway.
+Click the **2X** icon in your system tray to toggle the popup. Right-click to quit.
 
 ---
 
-### System Tray App (Windows / macOS / Linux)
+### macOS Widget (native SwiftUI)
 
-> 🚧 **Work in progress.** See [Contributing](#contributing) if you want to help build this.
+Floats on your desktop wallpaper. Draggable, remembers position, no dock icon.
 
-The system tray version will be a single binary you download and run. No dependencies, no Python, no Node. Just:
+```bash
+git clone https://github.com/Xczer/claude-2x.git
+cd claude-2x
+open Claude2xWidget/Claude2xWidget.xcodeproj
+# Cmd+R to build and run
+```
 
-1. Download the binary for your OS from [Releases](https://github.com/Xczer/claude-2x-tracker/releases)
-2. Drop `config.json` next to it
-3. Run it
+**Requirements:** macOS 13+ and Xcode 15+
 
-Click the tray icon → the same glass widget pops up.
+**Auto-launch on login:** System Settings -> General -> Login Items -> add Claude2xWidget.app
 
-**Platform coverage:**
+**If macOS blocks the app:**
+```bash
+xattr -cr /Applications/Claude2xWidget.app
+```
 
-| OS | Tray location | Status |
-|---|---|---|
-| Windows 10 / 11 | Bottom-right taskbar | 🚧 Planned |
-| macOS | Top-right menu bar | 🚧 Planned |
-| Ubuntu / Debian | Top-right (GNOME) | 🚧 Planned |
-| Fedora | Top-right (GNOME) | 🚧 Planned |
-| Arch / Manjaro | KDE, GNOME, XFCE | 🚧 Planned |
-| KDE Plasma (any distro) | System tray panel | 🚧 Planned |
-| XFCE | Panel tray | 🚧 Planned |
-| i3 / Sway | Bar tray block | 🚧 Planned |
-| Hyprland | Waybar tray module | 🚧 Planned |
+---
+
+### KDE Plasma Widget
+
+Native QML widget for KDE Plasma 5 or 6.
+
+```bash
+git clone https://github.com/Xczer/claude-2x.git
+cd claude-2x/kde-widget
+chmod +x install.sh && ./install.sh
+```
+
+Right-click desktop -> "Add Widgets..." -> search "Claude 2x Tracker".
 
 ---
 
 ## Configuration
 
-One file. Edit before running.
+The tray app reads `config.json` for local overrides. Schedule priority:
 
-**`config.json`** (at the root of the repo, next to the binary on other platforms):
+1. **Remote `schedule.json`** (fetched from this repo every 6 hours)
+2. **Local `config.json`** (next to the binary)
+3. **Hardcoded defaults**
 
 ```json
 {
-  "timezone": "Asia/Kolkata",
+  "timezone": "America/New_York",
   "active_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
   "blocked_window": {
-    "start": "17:30",
-    "end": "23:30"
-  },
-  "calendar_range": {
-    "start": "2026-03-21",
-    "end": "2026-03-28"
+    "start": "08:00",
+    "end": "14:00"
   }
 }
 ```
 
-### Your timezone
-
-| Location | Timezone ID |
-|---|---|
-| India (IST) | `Asia/Kolkata` |
-| US Eastern | `America/New_York` |
-| US Pacific | `America/Los_Angeles` |
-| UK | `Europe/London` |
-| Germany | `Europe/Berlin` |
-| Japan | `Asia/Tokyo` |
-| Singapore | `Asia/Singapore` |
-| Australia (Sydney) | `Australia/Sydney` |
-| Brazil (São Paulo) | `America/Sao_Paulo` |
-| UAE / Gulf | `Asia/Dubai` |
-
-Full list: [iana.org/time-zones](https://www.iana.org/time-zones)
-
-> **macOS note:** The macOS widget currently reads the config baked into `Config.swift`. Reading `config.json` at runtime is a planned improvement.
-
----
-
-## How the status logic works
-
-```
-IF today is Saturday or Sunday
-  → ⚫ WEEKEND
-
-ELSE IF current time (in your timezone) is between blocked.start and blocked.end
-  → 🔴 BLOCKED
-
-ELSE
-  → 🟢 2× ACTIVE
-```
-
-That's the entire algorithm. 15 lines of code. Everything else is just making it look good.
+You shouldn't need to touch this unless you want custom overrides.
 
 ---
 
 ## Project Structure
 
 ```
-claude-2x-tracker/
-│
-├── config.json                 ← Your schedule + timezone (edit this)
-├── README.md                   ← You are here
-├── Learn.md                    ← Deep dive: how the macOS widget was built from scratch
-│
-├── macOS/
-│   └── Claude2xWidget/         ← Xcode project (Swift + SwiftUI + AppKit)
-│       └── Claude2xWidget/
-│           ├── Claude2xWidgetApp.swift    ← App entry point
-│           ├── AppDelegate.swift          ← Window creation
-│           ├── FloatingWindow.swift       ← Desktop window (drag, snap, level)
-│           ├── StatusEngine.swift         ← All time logic (IST, 2x rules)
-│           ├── ContentView.swift          ← The UI (3 rows: status, bar, calendar)
-│           └── Views/
-│               └── GlassContainer.swift  ← Background, glass cards, color helpers
-│
-└── tray/                       ← 🚧 System tray app (coming soon)
-    ├── src/                    ← Tauri (Rust + HTML/CSS)
-    └── ...
+claude-2x/
+|
+|-- schedule.json                  <- Remote schedule (apps auto-fetch this)
+|-- config.json                    <- Local override for tray app
+|-- README.md
+|-- LICENSE
+|
+|-- Claude2xWidget/                <- macOS native widget (Swift + SwiftUI + AppKit)
+|   |-- Claude2xWidget/
+|       |-- StatusEngine.swift     <- All time logic + remote config fetch
+|       |-- ContentView.swift      <- The UI (status, bar, calendar)
+|       |-- FloatingWindow.swift   <- Desktop window (drag, snap, persist)
+|       |-- AppDelegate.swift      <- App entry point
+|       |-- Views/                 <- Extra view components
+|
+|-- tray/                          <- System tray app (Tauri 2 -- Rust + JS)
+|   |-- src/
+|   |   |-- index.html, style.css, main.js
+|   |-- src-tauri/
+|       |-- src/lib.rs             <- Status engine + remote config + tray logic
+|       |-- Cargo.toml
+|       |-- tauri.conf.json
+|
+|-- kde-widget/                    <- KDE Plasma widget (QML + JavaScript)
+|   |-- package/
+|   |   |-- metadata.json
+|   |   |-- contents/ui/main.qml  <- Everything in one file
+|   |-- install.sh
+|
+|-- .github/workflows/build.yml   <- CI: builds tray app for all platforms
 ```
+
+---
+
+## How the logic works
+
+```
+IF weekend (in your local timezone)
+  -> WEEKEND (no promotion)
+
+ELSE IF current time is in the peak window (8-2 PM ET, converted to local)
+  -> BLOCKED (standard limits)
+
+ELSE
+  -> 2x ACTIVE (double limits -- go ship something)
+```
+
+That's it. Everything else is just making it look good.
+
+---
+
+## Schedule Updates
+
+When Anthropic changes the peak hours (it has happened before), we update `schedule.json` in this repo. All three apps fetch it automatically every 6 hours. No app update, no rebuild, no action needed from you.
 
 ---
 
 ## Contributing
 
-PRs are very welcome. Most useful things right now:
+PRs welcome:
 
-### 🔥 Build the system tray app
-
-This is the big one. The plan is [Tauri](https://tauri.app) (Rust + HTML/CSS) because:
-- Ships as a native binary (~10MB) — not a website, not an Electron app
-- Single codebase runs on Windows, macOS, and Linux
-- The glass dark UI replicates perfectly in HTML/CSS
-- First-class system tray support built in
-
-If you know Rust or are willing to learn, this is the highest-impact contribution.
-
-### 🌱 Good first issues
-
-- Add your timezone to the examples table
-- Make the macOS widget read `config.json` at runtime instead of `Config.swift`
-- Improve the `calendar_range` to auto-calculate the current week instead of hardcoding dates
-- Add a screenshot of the widget running on your machine to the README
-- Report bugs, suggest ideas
-
-### How the macOS widget is architected
-
-Read [`Learn.md`](./Learn.md) — it's a complete walkthrough of every file, every decision, and every bug that was hit during development. Written for someone completely new to Swift.
+- Test on Windows / Linux and report issues
+- Add screenshots of the widget on your setup
+- Report bugs, suggest features
+- Help with the KDE widget (untested on real Plasma desktops)
 
 ---
 
 ## FAQ
 
 **Does this use the Claude API?**
-No. Pure local time math. No API key needed, no internet connection, no cost.
-
-**Why IST by default?**
-That's where this project started. Set `timezone` in `config.json` to yours.
-
-**My 2× window is different from the default.**
-Edit `blocked_window.start` and `blocked_window.end` in `config.json`.
-
-**Can I use this for something other than Claude?**
-Absolutely. It's just a configurable "am I inside or outside a time window" tracker. Works for anything.
+No. Pure local time math. No API key, no cost.
 
 **Will it drain my battery?**
-macOS widget: ~0.1% CPU. One timer fires per second, the glow animation runs at 60fps. Negligible.
+Negligible. ~0.1% CPU.
 
-**The widget is behind my wallpaper and I can't see it.**
-This shouldn't happen but if it does: relaunch the app. It will reappear at the top-right of your screen.
+**Why should I care about 2x limits?**
+Because you're paying for Pro/Max and you want to juice every last prompt out of it. More context, more output, more conversations -- all during off-peak. Plan your heavy Claude sessions around the 2x window and you'll never hit "usage limit reached" again.
+
+**Can I use this for something other than Claude?**
+Yes. It's a configurable "am I inside or outside a time window" tracker.
 
 ---
 
@@ -287,14 +242,13 @@ This shouldn't happen but if it does: relaunch the app. It will reappear at the 
 
 MIT. Take it, fork it, build on it.
 
-If this saved you from missing a 2× window, a ⭐ is appreciated.
-
 ---
 
 <div align="center">
 
-**macOS widget** · **System tray coming soon**
+**macOS widget -- System tray app -- KDE Plasma widget**
 
-*Made because staring at the clock is not a productivity strategy.*
+*Built because staring at the clock is not a productivity strategy.*
+*Also built entirely by Claude. Yes, the irony is not lost on us.*
 
 </div>

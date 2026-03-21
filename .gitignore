@@ -37,3 +37,14 @@ Thumbs.db
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# Tauri / Rust
+tray/src-tauri/target/
+tray/node_modules/
+tray/src-tauri/gen/schemas/
+
+# KDE Widget build artifacts
+kde-widget/package/contents/ui/*.qmlc
+
+# Claude Code
+.claude/

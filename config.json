@@ -1,7 +1,7 @@
 {
-  "_comment": "Edit this file to match your promotion schedule. Restart the widget after saving.",
+  "_comment": "Claude 2x promotion: usage doubled outside peak hours (8 AM - 2 PM ET) on weekdays.",
 
-  "timezone": "Asia/Kolkata",
+  "timezone": "America/New_York",
 
   "active_days": [
     "monday",
@@ -12,15 +12,9 @@
   ],
 
   "blocked_window": {
-    "start": "17:30",
-    "end": "23:30",
-    "_comment": "2x is BLOCKED during this window. Active outside it."
-  },
-
-  "calendar_range": {
-    "start": "2026-03-21",
-    "end": "2026-03-28",
-    "_comment": "8 days shown in the calendar strip. Update to your current promotion period."
+    "start": "08:00",
+    "end": "14:00",
+    "_comment": "Peak hours in ET. 2x is NOT active during this window."
   },
 
   "theme": {

@@ -1,0 +1,367 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --active:  #4ADE80;
+  --blocked: #F87171;
+  --weekend: #6B7280;
+  --accent:  #C96442;
+  --bg:      #0F0D0B;
+  --card:    rgba(18, 16, 14, 0.96);
+  --tint:    rgba(201, 100, 66, 0.04);
+  --text:    #F5F0EB;
+  --muted:   rgba(245, 240, 235, 0.38);
+  --radius:  22px;
+  --status-color: var(--active);
+}
+
+html, body {
+  width: 360px;
+  height: 155px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+/* ── Widget shell ─────────────────────────────────────────────── */
+.widget {
+  position: relative;
+  width: 360px;
+  height: 155px;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  padding: 12px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  box-shadow:
+    inset 0 0 0 0.8px rgba(255,255,255,0.12),
+    0 8px 24px rgba(0,0,0,0.22),
+    0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Warm tint + top highlight */
+.widget::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.015) 25%, transparent 60%),
+    var(--tint);
+  border-radius: var(--radius);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Background blobs ─────────────────────────────────────────── */
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+}
+.blob-1 {
+  width: 260px; height: 200px;
+  background: radial-gradient(circle, var(--accent), transparent 65%);
+  opacity: 0.14;
+  filter: blur(30px);
+  top: -80px; left: -60px;
+}
+.blob-2 {
+  width: 200px; height: 160px;
+  background: radial-gradient(circle, #8B5CF6, transparent 65%);
+  opacity: 0.07;
+  filter: blur(40px);
+  bottom: -60px; right: -40px;
+}
+
+/* Noise grain overlay */
+.noise {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+/* ── Content z-index ──────────────────────────────────────────── */
+.status-row, .bar-wrap, .calendar-row {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Status row ───────────────────────────────────────────────── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  opacity: 0;
+  transform: translateY(-8px);
+  animation: entrance-down 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s forwards;
+}
+
+.orb-wrap {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.orb {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--active);
+  box-shadow: 0 0 5px var(--active), 0 0 10px rgba(74,222,128,0.25);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--active);
+  opacity: 0.18;
+  animation: pulse-ring 1.6s ease-out infinite;
+  transition: background 0.4s;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.18; }
+  70%  { transform: scale(2.2); opacity: 0;    }
+  100% { transform: scale(2.2); opacity: 0;    }
+}
+
+.status-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.status-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-label {
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.88);
+}
+.status-badge {
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--active);
+  background: rgba(74,222,128,0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.status-sub {
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.next-window {
+  font-family: -apple-system, 'SF Mono', 'Menlo', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── Timeline bar ─────────────────────────────────────────────── */
+.bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: entrance-up 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s forwards;
+}
+
+.bar-track {
+  position: relative;
+  height: 40px;
+  border-radius: 8px;
+  overflow: visible;
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.07);
+}
+
+.bar-segments {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 2px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.bar-segments > div {
+  transition: flex 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bar-past {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  background: rgba(0,0,0,0.30);
+  border-radius: 7px 0 0 7px;
+  pointer-events: none;
+  transition: width 1s linear;
+}
+
+/* Weekend overlay */
+.weekend-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.weekend-icon {
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+}
+.weekend-text {
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* Now indicator — just glow + line, no cap or time label */
+.now-indicator {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  width: 8px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+  transition: left 1s linear;
+}
+.now-glow {
+  position: absolute;
+  inset: 0;
+  background: var(--status-color);
+  opacity: 0.22;
+  filter: blur(5px);
+  border-radius: 4px;
+}
+.now-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 1.8px;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, var(--status-color), white 50%, var(--status-color));
+  opacity: 0.9;
+  border-radius: 2px;
+  box-shadow: 0 0 4px var(--status-color);
+}
+
+/* Bar labels — positioned absolutely to match actual time positions */
+.bar-labels {
+  position: relative;
+  height: 12px;
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 7.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.22);
+}
+.bar-label {
+  position: absolute;
+  white-space: nowrap;
+}
+.bar-label:nth-child(1) { transform: translateX(-50%); }
+.bar-label:nth-child(2) { transform: translateX(-50%); }
+
+/* ── Calendar dots ────────────────────────────────────────────── */
+.calendar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  opacity: 0;
+  transform: translateY(8px);
+}
+@keyframes slide-up {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cal-day-num {
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.42);
+}
+.cal-day-num.today { font-weight: 700; color: var(--accent); }
+.cal-day-num.weekend { color: rgba(255,255,255,0.20); }
+
+.cal-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+}
+.cal-dot.active  { background: var(--active); opacity: 0.75; box-shadow: 0 0 4px rgba(74,222,128,0.4); }
+.cal-dot.weekend { background: #374151; }
+.cal-dot.today   { background: var(--accent) !important; opacity: 1 !important; box-shadow: 0 0 4px rgba(201,100,66,0.7) !important; }
+
+.cal-day-name {
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 7px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.28);
+}
+.cal-day-name.weekend { color: rgba(255,255,255,0.15); }
+
+/* ── Entrance animations ─────────────────────────────────────── */
+@keyframes entrance-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes entrance-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Status color overrides ───────────────────────────────────── */
+body.active  { --status-color: var(--active); }
+body.blocked { --status-color: var(--blocked); }
+body.weekend { --status-color: var(--weekend); }
+
+body.blocked .orb      { background: var(--blocked); box-shadow: 0 0 5px var(--blocked); }
+body.blocked .orb-ring { background: var(--blocked); }
+body.blocked .status-badge { color: var(--blocked); background: rgba(248,113,113,0.12); }
+
+body.weekend .orb      { background: var(--weekend); box-shadow: none; }
+body.weekend .orb-ring { background: var(--weekend); animation: none; opacity: 0.1; }
+body.weekend .status-badge { color: var(--weekend); background: rgba(107,114,128,0.12); }
+body.weekend .blob-1   { opacity: 0.06; }
+body.weekend .bar-segments { display: none; }
+body.weekend .bar-past { display: none; }
+body.weekend .now-indicator { display: none; }
+body.weekend .weekend-overlay { display: flex; }
+body.weekend .bar-labels { visibility: hidden; }

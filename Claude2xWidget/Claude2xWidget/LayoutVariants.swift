@@ -11,10 +11,10 @@ import SwiftUI
 struct MiniDayBar: View {
     let status: UsageStatus
     let currentTime: Date
-    let istTimeZone: TimeZone
+    let etTimeZone: TimeZone
 
     private var nowFrac: CGFloat {
-        var cal = Calendar(identifier: .gregorian); cal.timeZone = istTimeZone
+        var cal = Calendar(identifier: .gregorian); cal.timeZone = etTimeZone
         let h = cal.component(.hour,   from: currentTime)
         let m = cal.component(.minute, from: currentTime)
         let s = cal.component(.second, from: currentTime)
@@ -135,7 +135,7 @@ struct Layout1_LeftAccent: View {
 
                 // Bar
                 VStack(spacing: 4) {
-                    MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, istTimeZone: e.istTimeZone)
+                    MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, etTimeZone: e.etTimeZone)
                         .frame(height: 18)
                     BarAxisLabels()
                 }
@@ -199,7 +199,7 @@ struct Layout2_MonoCard: View {
 
             // Bar
             VStack(spacing: 4) {
-                MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, istTimeZone: e.istTimeZone)
+                MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, etTimeZone: e.etTimeZone)
                     .frame(height: 16)
                 BarAxisLabels()
             }
@@ -273,7 +273,7 @@ struct Layout3_TwoPanel: View {
 
                 Spacer()
 
-                MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, istTimeZone: e.istTimeZone)
+                MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, etTimeZone: e.etTimeZone)
                     .frame(height: 10)
             }
             .frame(width: 88)
@@ -330,7 +330,7 @@ struct Layout4_TimelineHero: View {
     @State private var appeared = false
 
     private var nowFrac: CGFloat {
-        var cal = Calendar(identifier: .gregorian); cal.timeZone = e.istTimeZone
+        var cal = Calendar(identifier: .gregorian); cal.timeZone = e.etTimeZone
         let h = cal.component(.hour,   from: e.currentTime)
         let m = cal.component(.minute, from: e.currentTime)
         return CGFloat(h * 60 + m) / 1440.0
@@ -448,7 +448,7 @@ struct Layout5_CompactPill: View {
 
             // Row 2: bar
             VStack(spacing: 3) {
-                MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, istTimeZone: e.istTimeZone)
+                MiniDayBar(status: e.currentStatus, currentTime: e.currentTime, etTimeZone: e.etTimeZone)
                     .frame(height: 14)
                 BarAxisLabels()
             }

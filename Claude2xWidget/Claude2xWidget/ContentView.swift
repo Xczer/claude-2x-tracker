@@ -23,7 +23,11 @@ struct ContentView: View {
                 TimelineBar(
                     status: engine.currentStatus,
                     currentTime: engine.currentTime,
-                    istTimeZone: engine.istTimeZone
+                    seg1: engine.seg1Fraction,
+                    seg2: engine.seg2Fraction,
+                    seg3: engine.seg3Fraction,
+                    blockStartLabel: engine.localBlockStartLabel,
+                    blockEndLabel: engine.localBlockEndLabel
                 )
                 .offset(y: appeared ? 0 : 8)
                 .opacity(appeared ? 1 : 0)
@@ -36,10 +40,11 @@ struct ContentView: View {
                     .animation(.spring(response: 0.55, dampingFraction: 0.8).delay(0.2), value: appeared)
             }
             .padding(.horizontal, 16)
-            .padding(.top, 12)
-            .padding(.bottom, 10)
+            .padding(.top, 0)
+            .padding(.bottom, 0)
         }
-        .frame(minWidth: 300, idealWidth: 340, maxWidth: 440)
+        .frame(minWidth: 300, idealWidth: 340, maxWidth: 440, maxHeight: 148)
+        .clipped()
         .onAppear {
             withAnimation { appeared = true }
         }
@@ -54,23 +59,23 @@ struct StatusRow: View {
     let status: UsageStatus
     let nextWindowText: String
 
-    @State private var pulse: CGFloat = 1.0
-
     var body: some View {
         HStack(spacing: 9) {
-            // Pulsing status orb
+            // Status orb with glow
             ZStack {
-                Circle()
-                    .fill(status.dotColor.opacity(0.18))
-                    .frame(width: 18, height: 18)
-                    .scaleEffect(pulse)
-                    .opacity(status.isActive ? 1 : 0)
+                if status.isActive {
+                    Circle()
+                        .fill(status.dotColor.opacity(0.2))
+                        .frame(width: 18, height: 18)
+                        .blur(radius: 4)
+                }
 
                 Circle()
                     .fill(status.dotColor)
                     .frame(width: 8, height: 8)
-                    .shadow(color: status.dotColor.opacity(0.9), radius: 5)
+                    .shadow(color: status.dotColor.opacity(0.9), radius: status.isActive ? 6 : 2)
             }
+            .frame(width: 20, height: 20)
 
             // Status label
             Text(status.label)
@@ -88,22 +93,9 @@ struct StatusRow: View {
                 .contentTransition(.numericText())
                 .animation(.easeInOut(duration: 0.3), value: nextWindowText)
         }
-        .onAppear {
-            guard status.isActive else { return }
-            withAnimation(.easeOut(duration: 1.6).repeatForever(autoreverses: false)) {
-                pulse = 2.2
-            }
-        }
-        .onChange(of: status) { s in
-            pulse = 1.0
-            if s.isActive {
-                withAnimation(.easeOut(duration: 1.6).repeatForever(autoreverses: false)) {
-                    pulse = 2.2
-                }
-            }
-        }
     }
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MARK: - Timeline Bar (the hero element)
@@ -112,44 +104,35 @@ struct StatusRow: View {
 struct TimelineBar: View {
     let status: UsageStatus
     let currentTime: Date
-    let istTimeZone: TimeZone
+    let seg1: CGFloat      // active before block (local)
+    let seg2: CGFloat      // blocked (local)
+    let seg3: CGFloat      // active after block (local)
+    let blockStartLabel: String  // e.g. "5:30 PM" for IST
+    let blockEndLabel: String    // e.g. "11:30 PM" for IST
 
     @State private var barAppeared = false
     @State private var glowPhase: Double = 0
 
-    // 60 fps glow pulse on the now-line
     private let glowTimer = Timer.publish(every: 0.016, on: .main, in: .common).autoconnect()
 
-    // 0.0–1.0 position of "now" across the 24-hour bar
+    // Now-indicator position in LOCAL time (user's timezone)
     private var nowFraction: CGFloat {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = istTimeZone
+        let cal = Calendar.current  // uses system timezone
         let h = cal.component(.hour,   from: currentTime)
         let m = cal.component(.minute, from: currentTime)
         let s = cal.component(.second, from: currentTime)
         return CGFloat(h * 60 + m + (s > 30 ? 1 : 0)) / 1440.0
     }
 
-    // Current IST time as HH:MM string for the floating label
-    private var nowLabel: String {
-        let f = DateFormatter()
-        f.timeZone = istTimeZone
-        f.dateFormat = "HH:mm"
-        return f.string(from: currentTime)
-    }
-
     var body: some View {
-        VStack(spacing: 4) {
-            // ── The bar + now-indicator ───────────────────────────
+        VStack(spacing: 3) {
             GeometryReader { geo in
                 let w = geo.size.width
                 let h = geo.size.height
-                let pinX = nowFraction * w                      // x of the now-line
-                let overrun: CGFloat = 8                        // how far line extends above/below bar
+                let pinX = nowFraction * w
 
                 ZStack(alignment: .leading) {
-
-                    // ── Background track ──
+                    // Background track
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .fill(Color.white.opacity(0.04))
                         .overlay(
@@ -157,101 +140,58 @@ struct TimelineBar: View {
                                 .strokeBorder(Color.white.opacity(0.07), lineWidth: 0.5)
                         )
 
-                    // ── Coloured segments (animate width on appear) ──
                     if status != .weekend {
+                        // Dynamic segments based on local timezone conversion
                         HStack(spacing: 2) {
-                            // Active: 00:00–17:30  (72.9%)
                             RoundedRectangle(cornerRadius: 6, style: .continuous)
                                 .fill(LinearGradient(
                                     colors: [Color(hex: "#22C55E").opacity(0.85), Color(hex: "#16A34A").opacity(0.55)],
                                     startPoint: .top, endPoint: .bottom))
-                                .frame(width: barAppeared ? w * 0.729 - 2 : 0)
+                                .frame(width: barAppeared ? w * seg1 - 1 : 0)
                                 .animation(.spring(response: 0.9, dampingFraction: 0.8).delay(0.1), value: barAppeared)
 
-                            // Blocked: 17:30–23:30  (25.0%)
                             RoundedRectangle(cornerRadius: 6, style: .continuous)
                                 .fill(LinearGradient(
                                     colors: [Color(hex: "#DC2626").opacity(0.5), Color(hex: "#991B1B").opacity(0.28)],
                                     startPoint: .top, endPoint: .bottom))
-                                .frame(width: barAppeared ? w * 0.250 - 2 : 0)
+                                .frame(width: barAppeared ? w * seg2 - 2 : 0)
                                 .animation(.spring(response: 0.9, dampingFraction: 0.8).delay(0.18), value: barAppeared)
 
-                            // Active: 23:30–24:00  (2.1%)
                             RoundedRectangle(cornerRadius: 6, style: .continuous)
                                 .fill(LinearGradient(
                                     colors: [Color(hex: "#22C55E").opacity(0.85), Color(hex: "#16A34A").opacity(0.55)],
                                     startPoint: .top, endPoint: .bottom))
-                                .frame(width: barAppeared ? w * 0.021 : 0)
+                                .frame(width: barAppeared ? w * seg3 - 1 : 0)
                                 .animation(.spring(response: 0.9, dampingFraction: 0.8).delay(0.26), value: barAppeared)
                         }
 
-                        // ── Past-dimming overlay (left of now) ──
-                        Rectangle()
-                            .fill(Color.black.opacity(0.30))
-                            .frame(width: pinX)
-                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                            .allowsHitTesting(false)
-
-                        // ── NOW INDICATOR ────────────────────────────────
-                        // Composed of three layers:
-                        //  1. Soft glow blur  (widest, most transparent)
-                        //  2. Core white line (1.5 px)
-                        //  3. Pin cap circle  (sits above bar, anchors the line)
-                        //  4. Time label      (floats above the pin)
-
-                        ZStack(alignment: .top) {
-
-                            // 1. Outer glow
-                            Capsule()
-                                .fill(status.dotColor.opacity(0.20 + 0.08 * sin(glowPhase)))
-                                .frame(width: 8, height: h + overrun * 2)
-                                .blur(radius: 5)
-
-                            // 2. Core line — runs the full bar height plus overrun top/bottom
-                            Capsule()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [
-                                            status.dotColor.opacity(0.9),
-                                            Color.white,
-                                            status.dotColor.opacity(0.6)
-                                        ],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                                .frame(width: 1.8, height: h + overrun * 2)
-                                .shadow(color: status.dotColor.opacity(0.7 + 0.2 * sin(glowPhase)), radius: 4)
-
-                            // 3. Pin cap — circle sitting at the very top of the line
-                            Circle()
-                                .fill(status.dotColor)
-                                .frame(width: 10, height: 10)
-                                .shadow(color: status.dotColor.opacity(0.9), radius: 6 + 2 * sin(glowPhase))
-                                .offset(y: -5)  // centre the cap on top edge of overrun
-
-                            // 4. Time label above the pin cap
-                            Text(nowLabel)
-                                .font(.system(size: 8.5, weight: .bold, design: .monospaced))
-                                .foregroundColor(status.dotColor)
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 2)
-                                .background(status.dotColor.opacity(0.12))
-                                .clipShape(Capsule())
-                                .offset(y: -26)  // float above the cap
+                        // Past-dimming overlay
+                        HStack(spacing: 0) {
+                            Rectangle()
+                                .fill(Color.black.opacity(0.28))
+                                .frame(width: max(0, pinX - 14))
+                            LinearGradient(
+                                colors: [Color.black.opacity(0.28), Color.black.opacity(0)],
+                                startPoint: .leading, endPoint: .trailing)
+                                .frame(width: 14)
                         }
-                        // Position the whole indicator at pinX
-                        .frame(width: 8)
-                        .offset(x: pinX - 4, y: -overrun)
-                        .animation(.linear(duration: 1), value: nowFraction)
+                        .frame(width: pinX, height: h)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .allowsHitTesting(false)
 
+                        // Now indicator
+                        Rectangle()
+                            .fill(Color.white.opacity(0.85))
+                            .frame(width: 1.5, height: h)
+                            .shadow(color: Color.white.opacity(0.5 + 0.2 * sin(glowPhase)), radius: 3)
+                            .offset(x: pinX - 0.75)
+                            .animation(.linear(duration: 1), value: nowFraction)
                     } else {
-                        // Weekend placeholder
                         HStack(spacing: 6) {
                             Image(systemName: "moon.zzz.fill")
                                 .font(.system(size: 10))
                                 .foregroundColor(.white.opacity(0.2))
-                            Text("NO 2× ON WEEKENDS")
+                            Text("NO 2\u{00d7} ON WEEKENDS")
                                 .font(.system(size: 9, weight: .semibold, design: .rounded))
                                 .foregroundColor(.white.opacity(0.2))
                                 .kerning(0.8)
@@ -260,18 +200,21 @@ struct TimelineBar: View {
                     }
                 }
             }
-            .frame(height: 40)
+            .frame(height: 36)
 
-            // ── Axis labels ───────────────────────────────────────
-            HStack {
-                axisLabel("12 AM")
-                Spacer()
-                axisLabel("5:30 PM")
-                Spacer()
-                axisLabel("11:30 PM")
-                Spacer()
-                axisLabel("12 AM")
-            }
+            // ── Axis labels — invisible on weekends but space reserved ──
+            Color.clear
+                .frame(height: 10)
+                .overlay {
+                    GeometryReader { geo in
+                        let w = geo.size.width
+                        axisLabel(blockStartLabel)
+                            .position(x: w * seg1, y: 5)
+                        axisLabel(blockEndLabel)
+                            .position(x: w * (seg1 + seg2), y: 5)
+                    }
+                }
+                .opacity(status == .weekend ? 0 : 1)
         }
         .onAppear {
             withAnimation { barAppeared = true }

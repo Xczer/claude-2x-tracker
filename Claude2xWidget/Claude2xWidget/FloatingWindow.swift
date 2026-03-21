@@ -7,12 +7,13 @@ import SwiftUI
 final class FloatingWindow: NSWindow, NSWindowDelegate {
 
     init(contentView: some View) {
-        let size = NSSize(width: 340, height: 185)
-        let rect = Self.restoredFrame(defaultSize: size)
+        let size = NSSize(width: 340, height: 148)
+        var rect = Self.restoredFrame(defaultSize: size)
+        rect.size.height = size.height   // always enforce correct height
 
         super.init(
             contentRect: rect,
-            styleMask: [.borderless, .resizable, .fullSizeContentView],
+            styleMask: [.borderless, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
@@ -52,8 +53,13 @@ final class FloatingWindow: NSWindow, NSWindowDelegate {
         host.layer?.masksToBounds = true
         self.contentView = host
 
-        minSize = NSSize(width: 280, height: 160)
-        maxSize = NSSize(width: 500, height: 320)
+        minSize = NSSize(width: 280, height: 148)
+        maxSize = NSSize(width: 500, height: 148)
+
+        // Force the height regardless of saved frame or hosting view intrinsic size
+        var f = frame
+        f.size.height = 148
+        setFrame(f, display: true)
 
         delegate = self
     }

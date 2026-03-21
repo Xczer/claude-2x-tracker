@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" style="background:transparent">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TwoX</title>
+  <style>html,body{background:transparent!important}</style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body style="background:transparent">
+  <div class="widget">
+    <!-- Animated background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="noise"></div>
+
+    <!-- Status row -->
+    <div class="status-row">
+      <div class="orb-wrap">
+        <div class="orb-ring" id="orbRing"></div>
+        <div class="orb" id="orb"></div>
+      </div>
+      <div class="status-text">
+        <div class="status-label-row">
+          <span class="status-label" id="statusLabel">2× ACTIVE</span>
+          <span class="status-badge" id="statusBadge">LIVE</span>
+        </div>
+        <span class="status-sub" id="statusSub">smash those prompts</span>
+      </div>
+      <div class="next-window" id="nextWindow"></div>
+    </div>
+
+    <!-- Timeline bar -->
+    <div class="bar-wrap">
+      <div class="bar-track" id="barTrack">
+        <div class="bar-segments" id="barSegments"></div>
+        <div class="bar-past" id="barPast"></div>
+        <!-- Now indicator: glow + gradient line only -->
+        <div class="now-indicator" id="nowIndicator">
+          <div class="now-glow"></div>
+          <div class="now-line"></div>
+        </div>
+        <!-- Weekend overlay -->
+        <div class="weekend-overlay" id="weekendOverlay">
+          <span class="weekend-icon">☾</span>
+          <span class="weekend-text">NO 2× ON WEEKENDS</span>
+        </div>
+      </div>
+      <div class="bar-labels">
+        <span class="bar-label" id="blockStartLabel" style="left:33.3%">8 AM</span>
+        <span class="bar-label" id="blockEndLabel" style="left:58.3%">2 PM</span>
+      </div>
+    </div>
+
+    <!-- Calendar dots row -->
+    <div class="calendar-row" id="calendarRow"></div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

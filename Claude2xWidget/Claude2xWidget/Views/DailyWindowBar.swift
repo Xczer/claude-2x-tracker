@@ -28,7 +28,7 @@ private let daySegments: [DaySegment] = [
 struct DailyWindowBar: View {
     let status: UsageStatus
     let currentTime: Date
-    let istTimeZone: TimeZone
+    let etTimeZone: TimeZone
 
     @State private var appeared = false
     @State private var cursorGlow: Double = 0
@@ -201,7 +201,7 @@ struct DailyWindowBar: View {
     /// Minutes since midnight in IST
     private var nowMinutes: Int {
         var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = istTimeZone
+        cal.timeZone = etTimeZone
         let h = cal.component(.hour,   from: currentTime)
         let m = cal.component(.minute, from: currentTime)
         let s = cal.component(.second, from: currentTime)

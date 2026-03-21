@@ -1,0 +1,8 @@
+{
+  "peak_start": "08:00",
+  "peak_end": "14:00",
+  "peak_timezone": "America/New_York",
+  "active_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+  "promotion_end": "2026-03-28",
+  "message": ""
+}

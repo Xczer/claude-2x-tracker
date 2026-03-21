@@ -1,0 +1,21 @@
+{
+    "KPlugin": {
+        "Id": "com.claude2x.tracker",
+        "Name": "Claude 2x Tracker",
+        "Description": "Tracks Claude 2x API active/blocked/weekend status based on IST timezone",
+        "Icon": "chronometer",
+        "Authors": [
+            {
+                "Name": "xczer",
+                "Email": ""
+            }
+        ],
+        "Category": "Utilities",
+        "License": "MIT",
+        "Version": "1.0.0",
+        "Website": ""
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "KPackageStructure": "Plasma/Applet"
+}
