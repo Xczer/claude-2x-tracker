@@ -2,10 +2,15 @@ name: Build Tray App
 
 on:
   push:
-    branches: [main]
     tags: ["v*"]
+    branches: [main]
+    paths:
+      - "tray/**"
+      - ".github/workflows/build.yml"
   pull_request:
     branches: [main]
+    paths:
+      - "tray/**"
   workflow_dispatch:
 
 permissions:
